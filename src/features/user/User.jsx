@@ -2,6 +2,8 @@ import { useState, useEffect } from "react";
 import UserForm from "./UserForm";
 import UserDelete from "./UserDelete";
 import UserTable from "./UserTable";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 // import userData from "../../userData";
 
 const initUser = {
@@ -27,6 +29,7 @@ const User = () => {
       try {
         const response = await fetch("http://localhost:3000/users");
         if (!response.ok) {
+          setIsLoading(false);
           setFetchErr("Something went wrong, check the url");
           return;
         }
@@ -47,7 +50,11 @@ const User = () => {
   }
 
   if (fetchErr) {
-    return <p>{fetchErr}</p>;
+    toast.error(fetchErr, {
+      position: "top-center",
+      autoClose: 8000,
+      theme: "dark",
+    });
   }
 
   //Post method
@@ -61,6 +68,7 @@ const User = () => {
         body: JSON.stringify(user),
       });
       if (!response.ok) {
+        setIsLoading(false);
         setFetchErr("Something went wrong, check the url");
         return;
       }
@@ -83,6 +91,7 @@ const User = () => {
       });
 
       if (!response.ok) {
+        setIsLoading(false);
         setFetchErr("Something went wrong, check the url");
         return;
       }
@@ -104,11 +113,12 @@ const User = () => {
       });
 
       if (!response.ok) {
-        setFetchErr("Something went wrong, check the url");
+        setIsLoading(false);
+        setFetchErr("Something went wrong, check the url or try again later");
         return;
       }
       const resData = await response.json();
-      console.log(resData, "deleted successfully");
+      console.log(resData);
     } catch (error) {
       setFetchErr("Something went wrong, check the url or try again later");
     }
@@ -173,11 +183,14 @@ const User = () => {
 
   return (
     <>
-      <UserTable
-        onAddEditUser={onAddEditUser}
-        onDeleteUser={onDeleteUser}
-        users={users}
-      />
+      {(fetchErr && <ToastContainer />) || (
+        <UserTable
+          onAddEditUser={onAddEditUser}
+          onDeleteUser={onDeleteUser}
+          users={users}
+        />
+      )}
+
       {showUserForm && (
         <UserForm
           onCancel={onCancelUserForm}
@@ -186,7 +199,6 @@ const User = () => {
           getDupErr={getDuplicateDataError}
         />
       )}
-
       {selDeleteUser && (
         <UserDelete
           user={selDeleteUser}

@@ -27,7 +27,7 @@ const UserTable = ({ onAddEditUser, onDeleteUser, users }) => {
                 <td className="px-6 py-4">{user.age}</td>
                 <td className="px-6 py-4">{user.email}</td>
                 <td className="px-6 py-4">{user.number}</td>
-                <td className="px-6 py-4 flex items-center justify-center">
+                <td className="px-6 py-4 flex items-center gap-2 justify-center">
                   <Button
                     bgColor="bg-blue-700"
                     onClick={() => onAddEditUser(user)}
