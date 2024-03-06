@@ -85,7 +85,7 @@ const UserForm = ({ onCancel, selectedUser, saveUser, getDupErr }) => {
   return (
     <div>
       <div className="fixed top-0 left-0 w-full h-full bg-gray-700 opacity-80"></div>
-      <div className="relative top-10 bg-white bg-opacity-100 w-[600px] rounded-lg mx-auto flex flex-col justify-center items-center font-Poppins font-medium z-50">
+      <div className="fixed translate-x-[50%] translate-y-[20%] bg-white bg-opacity-100 w-[600px] rounded-lg  flex flex-col justify-center items-center font-Poppins font-medium z-50">
         <h2 className="font-bold">User Form</h2>
         <form action="" className="flex flex-col gap-4 text-left p-4">
           <label htmlFor="Name" className="font-semibold">
