@@ -3,8 +3,8 @@ import Button from "../../shared/UI/Button";
 
 const UserTable = ({ onAddEditUser, onDeleteUser, users }) => {
   return (
-    <div className="fixed w-[80%]  flex flex-col justify-left items-center top-20 font-Poppins -z-10 ">
-      <Button bgColor="bg-blue-700 " onClick={() => onAddEditUser(null)}>
+    <div className="absolute w-[80%] h-full top-10  flex flex-col justify-left items-center font-Poppins -z-10 ">
+      <Button bgColor="bg-blue-700" onClick={() => onAddEditUser(null)}>
         Add User
       </Button>
       <table className="relative w-[80%] text-left rounded-lg shadow-lg ">
