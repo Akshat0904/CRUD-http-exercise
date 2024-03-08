@@ -34,10 +34,8 @@ const User = () => {
           return;
         }
         const resData = await response.json();
-        console.log(resData);
         setUsers(resData);
       } catch (error) {
-        console.log(error.message);
         setFetchErr("Something went wrong, check the url or try again later");
       }
       setIsLoading(false);
@@ -80,7 +78,6 @@ const User = () => {
         }
       }
       setSelEditUser(prevOrNextUser);
-      console.log(prevOrNextUser);
       return prevOrNextUser;
     }
   };
@@ -101,9 +98,7 @@ const User = () => {
         return;
       }
       resData = await response.json();
-      console.log(resData);
     } catch (error) {
-      // console.log(error.message);
       setFetchErr("Something went wrong, check the url or try again later");
     }
     setIsLoading(false);
@@ -112,6 +107,7 @@ const User = () => {
 
   //Delete method
   const deleteUserFromDb = async (id) => {
+    let resData;
     setIsLoading(true);
     try {
       const response = await fetch(`http://localhost:3000/users/${id}/`, {
@@ -123,16 +119,17 @@ const User = () => {
         setFetchErr("Something went wrong, check the url");
         return;
       }
-      const resData = await response.json();
-      console.log(resData, "deleted successfully");
+      resData = await response.json();
     } catch (error) {
       setFetchErr("Something went wrong, check the url or try again later");
     }
     setIsLoading(false);
+    return resData;
   };
 
   //Put method
   const editUserInDb = async (user) => {
+    let resData;
     setIsLoading(true);
     try {
       const response = await fetch(`http://localhost:3000/users/${user.id}/`, {
@@ -146,12 +143,12 @@ const User = () => {
         setFetchErr("Something went wrong, check the url or try again later");
         return;
       }
-      const resData = await response.json();
-      console.log(resData);
+      resData = await response.json();
     } catch (error) {
       setFetchErr("Something went wrong, check the url or try again later");
     }
     setIsLoading(false);
+    return resData;
   };
 
   const onAddEditUser = (user) => {
@@ -180,7 +177,6 @@ const User = () => {
 
   const saveUser = async (user) => {
     const usersArray = [...users];
-    console.log(usersArray);
 
     if (user.id) {
       const index = usersArray.findIndex((obj) => obj.id === user.id);
@@ -188,7 +184,6 @@ const User = () => {
       editUserInDb(user);
     } else {
       const userWithId = await addUserToDb(user);
-      console.log(userWithId);
       1;
       usersArray.push(userWithId);
     }
