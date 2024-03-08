@@ -2,7 +2,15 @@
 import { useState } from "react";
 import Button from "../../shared/UI/Button";
 
-const UserForm = ({ onCancel, selectedUser, saveUser, getDupErr }) => {
+const UserForm = ({
+  onCancel,
+  selectedUser,
+  saveUser,
+  getDupErr,
+  getPrevOrNextUser,
+  isFirstUser,
+  isLastUser,
+}) => {
   const [user, setUser] = useState({
     id: selectedUser.id,
     name: selectedUser.name,
@@ -61,6 +69,11 @@ const UserForm = ({ onCancel, selectedUser, saveUser, getDupErr }) => {
     saveUser(user);
   };
 
+  const setPrevOrNextUser = (user, button) => {
+    let currentUser = getPrevOrNextUser(user, button);
+    setUser(currentUser);
+  };
+
   const onChange = (e) => {
     setUser({ ...user, [e.target.name]: e.target.value });
   };
@@ -70,7 +83,13 @@ const UserForm = ({ onCancel, selectedUser, saveUser, getDupErr }) => {
       <div className="fixed top-0 left-0 w-full h-full bg-gray-700 opacity-80"></div>
       <div className="fixed translate-x-[50%] translate-y-[20%] mx-auto flex items-center justify-center bg-white bg-opacity-100 w-[650px] rounded-lg font-Poppins font-medium z-50">
         {selectedUser.id && (
-          <Button bgColor="bg-blue-400 ml-4 mr-20">Previous</Button>
+          <Button
+            bgColor="bg-red-400 ml-4 mr-20"
+            onClick={() => setPrevOrNextUser(user, "previous")}
+            disabled={isFirstUser}
+          >
+            Previous
+          </Button>
         )}
         <div className="flex flex-col  justify-center items-center">
           <h2 className="font-bold">User Form</h2>
@@ -143,7 +162,13 @@ const UserForm = ({ onCancel, selectedUser, saveUser, getDupErr }) => {
           </form>
         </div>
         {selectedUser.id && (
-          <Button bgColor="bg-blue-400 mr-4 ml-20">Next</Button>
+          <Button
+            bgColor="bg-red-400 mr-4 ml-20"
+            onClick={() => setPrevOrNextUser(user, "next")}
+            disabled={isLastUser}
+          >
+            Next
+          </Button>
         )}
       </div>
     </div>

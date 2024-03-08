@@ -22,7 +22,7 @@ const User = () => {
   const [selEditUser, setSelEditUser] = useState(initUser);
   const [selDeleteUser, setSelDeleteUser] = useState(null);
 
-  //get all users from db
+  //Get Method: get all users from db
   useEffect(() => {
     const fetchUsers = async () => {
       setIsLoading(true);
@@ -56,6 +56,34 @@ const User = () => {
       theme: "dark",
     });
   }
+
+  const getPrevOrNextUser = (user, getUser) => {
+    const selectedUsers = [...users];
+
+    const index = selectedUsers.findIndex((obj) => obj.id === user.id);
+    let prevOrNextUser = {};
+
+    if (index !== -1) {
+      if (getUser === "next") {
+        {
+          index === selectedUsers.length - 1
+            ? (prevOrNextUser = selectedUsers[index])
+            : (prevOrNextUser = selectedUsers[index + 1]);
+        }
+      }
+
+      if (getUser === "previous") {
+        {
+          index === 0
+            ? (prevOrNextUser = selectedUsers[index])
+            : (prevOrNextUser = selectedUsers[index - 1]);
+        }
+      }
+      setSelEditUser(prevOrNextUser);
+      console.log(prevOrNextUser);
+      return prevOrNextUser;
+    }
+  };
 
   //Post method
   const addUserToDb = async (user) => {
@@ -103,6 +131,7 @@ const User = () => {
     setIsLoading(false);
   };
 
+  //Put method
   const editUserInDb = async (user) => {
     setIsLoading(true);
     try {
@@ -181,6 +210,13 @@ const User = () => {
     return duplicateErr;
   };
 
+  const isFirstUser =
+    selEditUser.id && users.length > 0 && users[0].id === selEditUser.id;
+  const isLastUser =
+    selEditUser.id &&
+    users.length > 0 &&
+    users[users.length - 1].id === selEditUser.id;
+
   return (
     <>
       {(fetchErr && <ToastContainer />) || (
@@ -197,6 +233,9 @@ const User = () => {
           selectedUser={selEditUser}
           saveUser={saveUser}
           getDupErr={getDuplicateDataError}
+          getPrevOrNextUser={getPrevOrNextUser}
+          isFirstUser={isFirstUser}
+          isLastUser={isLastUser}
         />
       )}
       {selDeleteUser && (
