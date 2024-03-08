@@ -78,13 +78,16 @@ const UserForm = ({
     setUser({ ...user, [e.target.name]: e.target.value });
   };
 
+  const prevBtnColor = isFirstUser ? "bg-red-400" : "bg-red-500";
+  const NextBtnColor = isLastUser ? "bg-red-400" : "bg-red-500";
+
   return (
     <div>
       <div className="fixed top-0 left-0 w-full h-full bg-gray-700 opacity-80"></div>
       <div className="fixed translate-x-[50%] translate-y-[20%] mx-auto flex items-center justify-center bg-white bg-opacity-100 w-[650px] rounded-lg font-Poppins font-medium z-50">
         {selectedUser.id && (
           <Button
-            bgColor="bg-red-400 ml-4 mr-20"
+            bgColor={`ml-4 mr-20 ${prevBtnColor}`}
             onClick={() => setPrevOrNextUser(user, "previous")}
             disabled={isFirstUser}
           >
@@ -163,7 +166,7 @@ const UserForm = ({
         </div>
         {selectedUser.id && (
           <Button
-            bgColor="bg-red-400 mr-4 ml-20"
+            bgColor={`mr-4 ml-20 ${NextBtnColor}`}
             onClick={() => setPrevOrNextUser(user, "next")}
             disabled={isLastUser}
           >
