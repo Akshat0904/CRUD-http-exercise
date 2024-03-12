@@ -23,7 +23,7 @@ const User = () => {
   const [showUserForm, setShowUserForm] = useState(false);
   const [selEditUser, setSelEditUser] = useState(initUser);
   const [selDeleteUser, setSelDeleteUser] = useState(null);
-  const [indexAndLength, setIndexAndLength] = useState({
+  const [userIndexAndLength, setUserIndexAndLength] = useState({
     index: 0,
     length: 0,
   });
@@ -54,7 +54,7 @@ const User = () => {
     const allUsers = [...users];
     const usersLength = allUsers.length;
     const userIndex = allUsers.findIndex((obj) => obj.id === user.id);
-    setIndexAndLength({
+    setUserIndexAndLength({
       index: userIndex,
       length: usersLength,
     });
@@ -64,20 +64,13 @@ const User = () => {
     const selectedUsers = [...users];
     let prevOrNextUser = {};
 
-    if (indexAndLength.index !== -1) {
+    if (userIndexAndLength.index !== -1) {
       if (clickEvent === "next") {
-        {
-          // (userIndex === selectedUsers.length - 1 &&
-          //   (prevOrNextUser = selectedUsers[userIndex])) ||
-          prevOrNextUser = selectedUsers[indexAndLength.index + 1];
-        }
+        prevOrNextUser = selectedUsers[userIndexAndLength.index + 1];
       }
 
       if (clickEvent === "previous") {
-        {
-          // (userIndex === 0 && (prevOrNextUser = selectedUsers[userIndex])) ||
-          prevOrNextUser = selectedUsers[indexAndLength.index - 1];
-        }
+        prevOrNextUser = selectedUsers[userIndexAndLength.index - 1];
       }
       setSelEditUser(prevOrNextUser);
       setIndex(prevOrNextUser);
@@ -235,7 +228,7 @@ const User = () => {
           saveUser={saveUser}
           getDupErr={getDuplicateDataError}
           getPrevOrNextUser={getPrevOrNextUser}
-          indexAndLen={indexAndLength}
+          userIndexAndLength={userIndexAndLength}
         />
       )}
       {selDeleteUser && (
