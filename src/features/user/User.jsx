@@ -23,10 +23,7 @@ const User = () => {
   const [showUserForm, setShowUserForm] = useState(false);
   const [selEditUser, setSelEditUser] = useState(initUser);
   const [selDeleteUser, setSelDeleteUser] = useState(null);
-  const [userIndexAndLength, setUserIndexAndLength] = useState({
-    index: 0,
-    length: 0,
-  });
+  const [userIndex, setUserIndex] = useState(0);
 
   //Get Method: get all users from db
   useEffect(() => {
@@ -52,29 +49,24 @@ const User = () => {
 
   const setIndex = (user) => {
     const allUsers = [...users];
-    const usersLength = allUsers.length;
     const userIndex = allUsers.findIndex((obj) => obj.id === user.id);
-    setUserIndexAndLength({
-      index: userIndex,
-      length: usersLength,
-    });
+    setUserIndex(userIndex);
   };
 
   const getPrevOrNextUser = (clickEvent) => {
     const selectedUsers = [...users];
     let prevOrNextUser = {};
 
-    if (userIndexAndLength.index !== -1) {
+    if (userIndex !== -1) {
       if (clickEvent === "next") {
-        prevOrNextUser = selectedUsers[userIndexAndLength.index + 1];
+        prevOrNextUser = selectedUsers[userIndex + 1];
       }
 
       if (clickEvent === "previous") {
-        prevOrNextUser = selectedUsers[userIndexAndLength.index - 1];
+        prevOrNextUser = selectedUsers[userIndex - 1];
       }
       setSelEditUser(prevOrNextUser);
       setIndex(prevOrNextUser);
-      return prevOrNextUser;
     }
   };
 
@@ -228,7 +220,8 @@ const User = () => {
           saveUser={saveUser}
           getDupErr={getDuplicateDataError}
           getPrevOrNextUser={getPrevOrNextUser}
-          userIndexAndLength={userIndexAndLength}
+          userIndex={userIndex}
+          userRecordLength={users.length}
         />
       )}
       {selDeleteUser && (

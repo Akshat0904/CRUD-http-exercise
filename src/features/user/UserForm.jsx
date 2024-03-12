@@ -1,5 +1,5 @@
 /* eslint-disable react/prop-types */
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Button from "../../shared/UI/Button";
 
 const UserForm = ({
@@ -8,15 +8,15 @@ const UserForm = ({
   saveUser,
   getDupErr,
   getPrevOrNextUser,
-  userIndexAndLength,
+  userIndex,
+  userRecordLength,
 }) => {
-  const [user, setUser] = useState({
-    id: selectedUser.id,
-    name: selectedUser.name,
-    age: selectedUser.age,
-    email: selectedUser.email,
-    number: selectedUser.number,
-  });
+  const [user, setUser] = useState({});
+
+  useEffect(() => {
+    setUser(selectedUser);
+    setFormErr({});
+  }, [selectedUser]);
 
   const [formErr, setFormErr] = useState({});
 
@@ -69,21 +69,16 @@ const UserForm = ({
   };
 
   const setPrevOrNextUser = (clickEvent) => {
-    let currentUser = getPrevOrNextUser(clickEvent);
-    setUser(currentUser);
-    setFormErr({});
+    getPrevOrNextUser(clickEvent);
   };
 
   const onChange = (e) => {
     setUser({ ...user, [e.target.name]: e.target.value });
   };
 
-  const prevBtnColor =
-    (userIndexAndLength.index === 0 && "bg-red-400") || "bg-red-500";
+  const prevBtnColor = (userIndex === 0 && "bg-red-400") || "bg-red-500";
   const NextBtnColor =
-    (userIndexAndLength.index === userIndexAndLength.length - 1 &&
-      "bg-red-400") ||
-    "bg-red-500";
+    (userIndex === userRecordLength - 1 && "bg-red-400") || "bg-red-500";
 
   return (
     <div>
@@ -93,7 +88,7 @@ const UserForm = ({
           <Button
             bgColor={`ml-4 mr-20 ${prevBtnColor}`}
             onClick={() => setPrevOrNextUser("previous")}
-            disabled={userIndexAndLength.index === 0}
+            disabled={userIndex === 0}
           >
             Previous
           </Button>
@@ -172,9 +167,7 @@ const UserForm = ({
           <Button
             bgColor={`mr-4 ml-20 ${NextBtnColor}`}
             onClick={() => setPrevOrNextUser("next")}
-            disabled={
-              userIndexAndLength.index === userIndexAndLength.length - 1
-            }
+            disabled={userIndex === userRecordLength - 1}
           >
             Next
           </Button>
