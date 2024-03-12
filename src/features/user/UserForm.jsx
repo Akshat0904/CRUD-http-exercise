@@ -8,8 +8,7 @@ const UserForm = ({
   saveUser,
   getDupErr,
   getPrevOrNextUser,
-  isFirstUser,
-  isLastUser,
+  indexAndLen,
 }) => {
   const [user, setUser] = useState({
     id: selectedUser.id,
@@ -69,17 +68,21 @@ const UserForm = ({
     saveUser(user);
   };
 
-  const setPrevOrNextUser = (user, button) => {
-    let currentUser = getPrevOrNextUser(user, button);
+  const setPrevOrNextUser = (clickEvent) => {
+    let currentUser = getPrevOrNextUser(clickEvent);
     setUser(currentUser);
+    setFormErr({});
   };
 
   const onChange = (e) => {
     setUser({ ...user, [e.target.name]: e.target.value });
   };
 
-  const prevBtnColor = isFirstUser ? "bg-red-400" : "bg-red-500";
-  const NextBtnColor = isLastUser ? "bg-red-400" : "bg-red-500";
+  const prevBtnColor =
+    (indexAndLen.index === 0 && "bg-red-400") || "bg-red-500";
+  const NextBtnColor =
+    (indexAndLen.index === indexAndLen.length - 1 && "bg-red-400") ||
+    "bg-red-500";
 
   return (
     <div>
@@ -88,8 +91,8 @@ const UserForm = ({
         {selectedUser.id && (
           <Button
             bgColor={`ml-4 mr-20 ${prevBtnColor}`}
-            onClick={() => setPrevOrNextUser(user, "previous")}
-            disabled={isFirstUser}
+            onClick={() => setPrevOrNextUser("previous")}
+            disabled={indexAndLen.index === 0}
           >
             Previous
           </Button>
@@ -167,8 +170,8 @@ const UserForm = ({
         {selectedUser.id && (
           <Button
             bgColor={`mr-4 ml-20 ${NextBtnColor}`}
-            onClick={() => setPrevOrNextUser(user, "next")}
-            disabled={isLastUser}
+            onClick={() => setPrevOrNextUser("next")}
+            disabled={indexAndLen.index === indexAndLen.length - 1}
           >
             Next
           </Button>

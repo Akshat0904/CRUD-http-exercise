@@ -13,6 +13,8 @@ const initUser = {
   number: "",
 };
 
+const domain = "http://localhost:3000";
+
 const User = () => {
   //Functionality states
   const [users, setUsers] = useState([]);
@@ -21,73 +23,74 @@ const User = () => {
   const [showUserForm, setShowUserForm] = useState(false);
   const [selEditUser, setSelEditUser] = useState(initUser);
   const [selDeleteUser, setSelDeleteUser] = useState(null);
+  const [indexAndLength, setIndexAndLength] = useState({
+    index: 0,
+    length: 0,
+  });
 
   //Get Method: get all users from db
   useEffect(() => {
-    const fetchUsers = async () => {
-      setIsLoading(true);
-      try {
-        const response = await fetch("http://localhost:3000/users");
-        if (!response.ok) {
-          setIsLoading(false);
-          setFetchErr("Something went wrong, check the url");
-          return;
-        }
-        const resData = await response.json();
-        setUsers(resData);
-      } catch (error) {
-        setFetchErr("Something went wrong, check the url or try again later");
-      }
-      setIsLoading(false);
-    };
     fetchUsers();
   }, []);
 
-  if (isLoading) {
-    return <p className="text-black">Please wait until your data presented</p>;
-  }
+  const fetchUsers = async () => {
+    setIsLoading(true);
+    try {
+      const response = await fetch(`${domain}/users`);
+      if (!response.ok) {
+        setIsLoading(false);
+        setFetchErr("Something went wrong, check the url");
+        return;
+      }
+      const resData = await response.json();
+      setUsers(resData);
+    } catch (error) {
+      setFetchErr("Something went wrong, check the url or try again later");
+    }
+    setIsLoading(false);
+  };
 
-  if (fetchErr) {
-    toast.error(fetchErr, {
-      position: "top-center",
-      autoClose: 8000,
-      theme: "dark",
+  const setIndex = (user) => {
+    const allUsers = [...users];
+    const usersLength = allUsers.length;
+    const userIndex = allUsers.findIndex((obj) => obj.id === user.id);
+    setIndexAndLength({
+      index: userIndex,
+      length: usersLength,
     });
-  }
+  };
 
-  const getPrevOrNextUser = (user, getUser) => {
+  const getPrevOrNextUser = (clickEvent) => {
     const selectedUsers = [...users];
-
-    const index = selectedUsers.findIndex((obj) => obj.id === user.id);
     let prevOrNextUser = {};
 
-    if (index !== -1) {
-      if (getUser === "next") {
+    if (indexAndLength.index !== -1) {
+      if (clickEvent === "next") {
         {
-          index === selectedUsers.length - 1
-            ? (prevOrNextUser = selectedUsers[index])
-            : (prevOrNextUser = selectedUsers[index + 1]);
+          // (userIndex === selectedUsers.length - 1 &&
+          //   (prevOrNextUser = selectedUsers[userIndex])) ||
+          prevOrNextUser = selectedUsers[indexAndLength.index + 1];
         }
       }
 
-      if (getUser === "previous") {
+      if (clickEvent === "previous") {
         {
-          index === 0
-            ? (prevOrNextUser = selectedUsers[index])
-            : (prevOrNextUser = selectedUsers[index - 1]);
+          // (userIndex === 0 && (prevOrNextUser = selectedUsers[userIndex])) ||
+          prevOrNextUser = selectedUsers[indexAndLength.index - 1];
         }
       }
       setSelEditUser(prevOrNextUser);
+      setIndex(prevOrNextUser);
       return prevOrNextUser;
     }
   };
 
   //Post method
-  const addUserToDb = async (user) => {
+  const addUser = async (user) => {
     let resData = {};
     setIsLoading(true);
     try {
-      const response = await fetch("http://localhost:3000/users", {
+      const response = await fetch(`${domain}/users`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(user),
@@ -106,11 +109,11 @@ const User = () => {
   };
 
   //Delete method
-  const deleteUserFromDb = async (id) => {
-    let resData;
+  const deleteUser = async (id) => {
+    const allUsers = [...users];
     setIsLoading(true);
     try {
-      const response = await fetch(`http://localhost:3000/users/${id}/`, {
+      const response = await fetch(`${domain}/users/${id}/`, {
         method: "DELETE",
       });
 
@@ -119,20 +122,21 @@ const User = () => {
         setFetchErr("Something went wrong, check the url");
         return;
       }
-      resData = await response.json();
+      const resData = await response.json();
+      const updatedUserList = allUsers.filter((obj) => obj.id !== resData.id);
+      setUsers(updatedUserList);
     } catch (error) {
       setFetchErr("Something went wrong, check the url or try again later");
     }
     setIsLoading(false);
-    return resData;
   };
 
   //Put method
-  const editUserInDb = async (user) => {
+  const editUser = async (user) => {
     let resData;
     setIsLoading(true);
     try {
-      const response = await fetch(`http://localhost:3000/users/${user.id}/`, {
+      const response = await fetch(`${domain}/users/${user.id}/`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(user),
@@ -154,6 +158,7 @@ const User = () => {
   const onAddEditUser = (user) => {
     setShowUserForm(!showUserForm);
     setSelEditUser(user || initUser);
+    setIndex(user);
   };
 
   const onCancelUserForm = () => {
@@ -169,9 +174,7 @@ const User = () => {
   };
 
   const deleteSelectedUser = (user) => {
-    deleteUserFromDb(user.id);
-    const updatedUserList = users.filter((obj) => obj.id !== user.id);
-    setUsers(updatedUserList);
+    deleteUser(user.id);
     setSelDeleteUser(null);
   };
 
@@ -181,10 +184,9 @@ const User = () => {
     if (user.id) {
       const index = usersArray.findIndex((obj) => obj.id === user.id);
       usersArray[index] = user;
-      editUserInDb(user);
+      editUser(user);
     } else {
-      const userWithId = await addUserToDb(user);
-      1;
+      const userWithId = await addUser(user);
       usersArray.push(userWithId);
     }
     setUsers(usersArray);
@@ -205,22 +207,26 @@ const User = () => {
     return duplicateErr;
   };
 
-  const isFirstUser =
-    selEditUser.id && users.length > 0 && users[0].id === selEditUser.id;
-  const isLastUser =
-    selEditUser.id &&
-    users.length > 0 &&
-    users[users.length - 1].id === selEditUser.id;
+  if (fetchErr) {
+    toast.error(fetchErr, {
+      position: "top-center",
+      autoClose: 8000,
+      theme: "dark",
+    });
+  }
 
   return (
     <>
-      {(fetchErr && <ToastContainer />) || (
-        <UserTable
-          onAddEditUser={onAddEditUser}
-          onDeleteUser={onDeleteUser}
-          users={users}
-        />
-      )}
+      {(isLoading && (
+        <p className="text-black">Please wait until your data presented</p>
+      )) ||
+        (fetchErr && <ToastContainer />) || (
+          <UserTable
+            onAddEditUser={onAddEditUser}
+            onDeleteUser={onDeleteUser}
+            users={users}
+          />
+        )}
 
       {showUserForm && (
         <UserForm
@@ -229,8 +235,7 @@ const User = () => {
           saveUser={saveUser}
           getDupErr={getDuplicateDataError}
           getPrevOrNextUser={getPrevOrNextUser}
-          isFirstUser={isFirstUser}
-          isLastUser={isLastUser}
+          indexAndLen={indexAndLength}
         />
       )}
       {selDeleteUser && (
