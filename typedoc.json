@@ -1,0 +1,18 @@
+{
+  "entryPoints": [
+    "src/App.tsx",
+    "src/features/user/User.tsx",
+    "src/features/user/UserTable.tsx",
+    "src/features/user/UserDelete.tsx",
+    "src/shared/UI/Button.tsx",
+    "src/types/user.ts"
+  ],
+  "entryPointStrategy": "expand",
+  "out": "docs",
+  "name": "CRUD User Management Documentation",
+  "excludePrivate": true,
+  "excludeProtected": true,
+  "excludeExternals": true,
+  "hideGenerator": true,
+  "plugin": ["typedoc-plugin-markdown"]
+}

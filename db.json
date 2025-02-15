@@ -48,6 +48,18 @@
       "age": "25",
       "email": "hemant23@gmail.com",
       "number": "1212121212"
+    },
+    {
+      "id": "ebc0",
+      "name": "Rahil",
+      "email": "divyang-test@yopmail.com",
+      "age": "22",
+      "number": "1212121213"
     }
-  ]
+  ],
+  "posts": [],
+  "comments": [],
+  "profile": {
+    "name": "typicode"
+  }
 }

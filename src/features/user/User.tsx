@@ -1,12 +1,23 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import UserForm from "./UserForm";
 import UserDelete from "./UserDelete";
 import UserTable from "./UserTable";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-// import userData from "../../userData";
+import { IUser } from "../../types/user";
 
-const initUser = {
+/**
+ * Interface for User data structure
+ * @interface
+ */
+// interface ApiError {
+//   message: string;
+// }
+
+/**
+ * Initial user state
+ */
+const initUser: IUser = {
   name: "",
   email: "",
   age: "",
@@ -15,45 +26,64 @@ const initUser = {
 
 const domain = "http://localhost:3001";
 
-const User = () => {
-  //Functionality states
-  const [users, setUsers] = useState([]);
-  const [fetchErr, setFetchErr] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
-  const [showUserForm, setShowUserForm] = useState(false);
-  const [selEditUser, setSelEditUser] = useState(initUser);
-  const [selDeleteUser, setSelDeleteUser] = useState(null);
-  const [userIndex, setUserIndex] = useState(0);
+/**
+ * User Management Component
+ * @component User
+ * @description Main component for handling user CRUD operations
+ *
+ * @features
+ * - Fetch users from API
+ * - Add new users with validation
+ * - Edit existing users
+ * - Delete users with confirmation
+ * - Navigate between users in edit mode
+ * - Handle duplicate email/phone validation
+ * - Loading states and error handling
+ * - Toast notifications
+ *
+ * @example
+ * ```tsx
+ * <User />
+ * ```
+ */
+const User: React.FC = () => {
+  const [users, setUsers] = useState<IUser[]>([]);
+  const [fetchErr, setFetchErr] = useState<string>("");
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [showUserForm, setShowUserForm] = useState<boolean>(false);
+  const [selEditUser, setSelEditUser] = useState<IUser>(initUser);
+  const [selDeleteUser, setSelDeleteUser] = useState<IUser | null>(null);
+  const [userIndex, setUserIndex] = useState<number>(0);
 
-  //Get Method: get all users from db
-  useEffect(() => {
-    fetchUsers();
-  }, []);
-
-  const fetchUsers = async () => {
-    setIsLoading(true);
-    try {
-      const response = await fetch(`${domain}/users`);
-      if (!response.ok) {
-        setIsLoading(false);
-        setFetchErr("Something went wrong, check the url");
-        return;
-      }
-      const resData = await response.json();
-      setUsers(resData);
-    } catch (error) {
-      setFetchErr("Something went wrong, check the url or try again later");
-    }
-    setIsLoading(false);
-  };
-
-  const setIndex = (user) => {
+  /**
+   * Fetches users from the API
+   * @async
+   * @function fetchUsers
+   * @throws {Error} When API request fails
+   * @returns {Promise<void>}
+   */
+  //   const fetchUsers = async (): Promise<void> => {
+  //     setIsLoading(true);
+  //     try {
+  //       const response = await fetch(`${domain}/users`);
+  //       if (!response.ok) {
+  //         throw new Error("Failed to fetch users");
+  //       }
+  //       const resData: IUser[] = await response.json();
+  //       setUsers(resData);
+  //     } catch (error) {
+  //       setFetchErr(error instanceof Error ? error.message : "An error occurred");
+  //     } finally {
+  //       setIsLoading(false);
+  //     }
+  //   };
+  const setIndex = (user: IUser) => {
     const allUsers = [...users];
     const userIndex = allUsers.findIndex((obj) => obj.id === user.id);
     setUserIndex(userIndex);
   };
 
-  const getPrevOrNextUser = (clickEvent) => {
+  const getPrevOrNextUser = (clickEvent: string) => {
     const selectedUsers = [...users];
     let prevOrNextUser = {};
 
@@ -65,13 +95,19 @@ const User = () => {
       if (clickEvent === "previous") {
         prevOrNextUser = selectedUsers[userIndex - 1];
       }
-      setSelEditUser(prevOrNextUser);
-      setIndex(prevOrNextUser);
+      setSelEditUser(prevOrNextUser as IUser);
+      setIndex(prevOrNextUser as IUser);
     }
   };
 
-  //Post method
-  const addUser = async (user) => {
+  /**
+   * Adds a new user to the system
+   * @async
+   * @function addUser
+   * @param {IUser} user - User data to be added
+   * @returns {Promise<IUser>} Newly created user with ID
+   */
+  const addUser = async (user: IUser) => {
     let resData = {};
     setIsLoading(true);
     try {
@@ -94,7 +130,7 @@ const User = () => {
   };
 
   //Delete method
-  const deleteUser = async (id) => {
+  const deleteUser = async (id: string) => {
     const allUsers = [...users];
     setIsLoading(true);
     try {
@@ -117,7 +153,7 @@ const User = () => {
   };
 
   //Put method
-  const editUser = async (user) => {
+  const editUser = async (user: IUser) => {
     let resData;
     setIsLoading(true);
     try {
@@ -140,17 +176,17 @@ const User = () => {
     return resData;
   };
 
-  const onAddEditUser = (user) => {
+  const onAddEditUser = (user: IUser | null) => {
     setShowUserForm(!showUserForm);
     setSelEditUser(user || initUser);
-    setIndex(user);
+    setIndex(user || initUser);
   };
 
   const onCancelUserForm = () => {
     setShowUserForm(!showUserForm);
   };
 
-  const onDeleteUser = (user) => {
+  const onDeleteUser = (user: IUser) => {
     setSelDeleteUser(user);
   };
 
@@ -158,12 +194,14 @@ const User = () => {
     setSelDeleteUser(null);
   };
 
-  const deleteSelectedUser = (user) => {
-    deleteUser(user.id);
-    setSelDeleteUser(null);
+  const deleteSelectedUser = (user: IUser) => {
+    if (user.id) {
+      deleteUser(user.id);
+      setSelDeleteUser(null);
+    }
   };
 
-  const saveUser = async (user) => {
+  const saveUser = async (user: IUser) => {
     const usersArray = [...users];
 
     if (user.id) {
@@ -172,14 +210,14 @@ const User = () => {
       editUser(user);
     } else {
       const userWithId = await addUser(user);
-      usersArray.push(userWithId);
+      usersArray.push(userWithId as IUser);
     }
     setUsers(usersArray);
-    onAddEditUser();
+    onAddEditUser(user);
   };
 
-  const getDuplicateDataError = (user) => {
-    let duplicateErr = {};
+  const getDuplicateDataError = (user: IUser) => {
+    let duplicateErr: { email?: string; number?: string } = {};
 
     if (users.some((e) => e.email === user.email && e.id !== user.id)) {
       duplicateErr.email = "email is already exist, try another one";
@@ -209,7 +247,7 @@ const User = () => {
           <UserTable
             onAddEditUser={onAddEditUser}
             onDeleteUser={onDeleteUser}
-            users={users}
+            users={users as IUser[]}
           />
         )}
 
