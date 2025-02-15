@@ -1,12 +1,21 @@
 {
-  "name": "crud-http-exercise",
-  "private": true,
-  "version": "0.0.0",
-  "type": "module",
+  "name": "@akshat33/react-user-management",
+  "private": false,
+  "version": "1.0.0",
+  "description": "React User Management System with CRUD Operations",
+  "type": "commonjs",
+  "main": "dist/index.js",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "dev": "vite",
     "server": "json-server --watch db.json --port 3001 --host localhost --middlewares ./node_modules/json-server-reset",
     "build": "vite build",
+    "build:lib": "vite build",
+    "prepublishOnly": "npm run build:lib",
     "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview",
     "docs": "typedoc"
@@ -33,5 +42,21 @@
     "typedoc": "^0.25.0",
     "typedoc-plugin-markdown": "^3.15.0",
     "@types/node": "^18.0.0"
+  },
+  "peerDependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  },
+  "keywords": [
+    "react",
+    "user-management",
+    "crud",
+    "typescript"
+  ],
+  "author": "Akshat",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/akshat33/react-user-management.git"
   }
 }
